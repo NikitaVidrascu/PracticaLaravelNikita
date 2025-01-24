@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Alumno;
 
 class AlumnoController extends Controller
 {
@@ -19,7 +20,7 @@ class AlumnoController extends Controller
             if ($alumnos->isEmpty()) {
                 throw new \Exception("No hay alumnos registrados");
             }
-            return $this->sendResponse(true, "Alumnos obtenidos exitosamente", $alumnos, 200);
+            return $this->sendResponse(true, "Alumnos obtenidos exitosamente", $alumnos);
 
         } catch (\Exception $e) {
             return $this->sendResponse(false, $e->getMessage(), null, 404);
@@ -71,7 +72,7 @@ class AlumnoController extends Controller
             if (!$alumno) {
                 throw new \Exception("Alumno no encontrado");
             }
-            return $this->sendResponse(true, "Alumno encontrado", $alumno, 200);
+            return $this->sendResponse(true, "Alumno encontrado", $alumno);
             
         } catch (\Exception $e) {
             // Captura el error y devuelve una respuesta con el mensaje
@@ -103,7 +104,7 @@ class AlumnoController extends Controller
 
             $alumno = DB::table("alumno")->find($id);
 
-            return $this->sendResponse(true, "Alumno actualizado exitosamente", $alumno, 200);
+            return $this->sendResponse(true, "Alumno actualizado exitosamente", $alumno);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return $this->sendResponse(false, "Datos no válidos", $e->errors(), 422);
         } catch (ModelNotFoundException $e) {
@@ -125,11 +126,25 @@ class AlumnoController extends Controller
                 return $this->sendResponse(false, "Alumno no encontrado", null, 404);
             }
 
-            return $this->sendResponse(true, "Alumno eliminado exitosamente", null, 200);
+            return $this->sendResponse(true, "Alumno eliminado exitosamente", null);
         } catch (ModelNotFoundException $e) {
             return $this->sendResponse(false, "Alumno no encontrado", $e->getMessage(), 404);
         } catch (\Exception $e) {
             return $this->sendResponse(false, "Error inesperado", $e->getMessage(), 500);
         }
+    }
+
+    
+    public function getPerfil($id)
+    {
+        $alumno = Alumno::find($id);
+        return $this->sendResponse(true, "Perfil del alumno encontrado exitosamente", $alumno->perfil);
+    }
+
+    
+    public function getCurso($id)
+    {
+        $alumno = Alumno::find($id);
+        return $this->sendResponse(true, "Curso del alumno encontrado exitosamente", $alumno->curso);
     }
 }
